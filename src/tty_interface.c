@@ -155,6 +155,21 @@ static void action_backspace(tty_interface_t *state) {
 	memmove(&state->search[state->cursor], &state->search[original_cursor], length - original_cursor + 1);
 }
 
+static void action_delete(tty_interface_t *state) {
+	size_t length = strlen(state->search);
+	if (state->cursor == length) {
+		return;
+	}
+
+	size_t next_char = state->cursor;
+
+	do {
+		next_char++;
+	} while (!is_boundary(state->search[next_char]) && next_char < length);
+
+	memmove(&state->search[state->cursor], &state->search[next_char], length - next_char + 1);
+}
+
 static void action_del_word(tty_interface_t *state) {
 	size_t original_cursor = state->cursor;
 	size_t cursor = state->cursor;
@@ -279,7 +294,8 @@ typedef struct {
 #define KEY_CTRL(key) ((const char[]){((key) - ('@')), '\0'})
 
 static const keybinding_t keybindings[] = {{"\x1b", action_exit},       /* ESC */
-					   {"\x7f", action_backspace},	/* DEL */
+					   {"\x7f", action_backspace},	/* Backspace */
+					   {"\x1b[3~", action_delete},	/* DEL */
 
 					   {KEY_CTRL('H'), action_backspace}, /* Backspace (C-H) */
 					   {KEY_CTRL('W'), action_del_word}, /* C-W */
