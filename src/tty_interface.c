@@ -141,7 +141,7 @@ static void action_emit(tty_interface_t *state) {
 	state->exit = EXIT_SUCCESS;
 }
 
-static void action_del_char(tty_interface_t *state) {
+static void action_backspace(tty_interface_t *state) {
 	if (*state->search) {
 		size_t length = strlen(state->search);
 		if (state->cursor == 0) {
@@ -281,9 +281,9 @@ typedef struct {
 #define KEY_CTRL(key) ((const char[]){((key) - ('@')), '\0'})
 
 static const keybinding_t keybindings[] = {{"\x1b", action_exit},       /* ESC */
-					   {"\x7f", action_del_char},	/* DEL */
+					   {"\x7f", action_backspace},	/* DEL */
 
-					   {KEY_CTRL('H'), action_del_char}, /* Backspace (C-H) */
+					   {KEY_CTRL('H'), action_backspace}, /* Backspace (C-H) */
 					   {KEY_CTRL('W'), action_del_word}, /* C-W */
 					   {KEY_CTRL('U'), action_del_all},  /* C-U */
 					   {KEY_CTRL('I'), action_autocomplete}, /* TAB (C-I ) */
